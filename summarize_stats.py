@@ -10,7 +10,7 @@ stats_csv_name =  "motion_per_frame.csv"
 # make target list
 def summarize_stats(root_dir):
    target_list = []
-   out_vid_path=f"/opt/data/allvids_shorts/{root_dir}"
+   out_vid_path=f"/opt/data/allvids_shorts2/{root_dir}"
    os.makedirs(out_vid_path,exist_ok=True)
    num = 0
    with open('summary_stats.csv', 'w') as f:
@@ -19,7 +19,7 @@ def summarize_stats(root_dir):
            for f in files:
                print(f"{f}")
                full_path = os.path.join(dirpath, f)
-
+               full_path_vid = os.path.join(dirpath, "output.mp4")
                if f == stats_csv_name :
                    df2=pd.read_csv(full_path)
                    print(df2.keys())
@@ -27,14 +27,19 @@ def summarize_stats(root_dir):
                    num_faces=df2['num_faces'].sum()
                    num_person=df2['num_person'].sum()
                    avg_motion=df2['motion'].mean()
-                   w.writerow( [full_path,avg_motion,num_faces,num_person] )
+
+                   w.writerow( [full_path,f"{num}.mp4", avg_motion,num_faces,num_person] )
+                   os.makedirs(out_vid_path,exist_ok=True)
+                   print(f"Executing cp {full_path_vid} \"{out_vid_path}/{num}.mp4\"")
+                   os.system(f"cp \"{full_path_vid}\" \"{out_vid_path}/{num}.mp4\"")
+                   num+=1
                elif f == "output_motion.mp4":
                    os.remove(full_path)
-               elif f == "output.mp4":
-                   os.makedirs(out_vid_path,exist_ok=True)
-                   print(f"Executing cp {full_path} \"{out_vid_path}/{num}.mp4\"")
-                   os.system(f"cp \"{full_path}\" \"{out_vid_path}/{num}.mp4\"")
-                   num+=1
+               #elif f == "output.mp4":
+               #    os.makedirs(out_vid_path,exist_ok=True)
+               #    print(f"Executing cp {full_path} \"{out_vid_path}/{num}.mp4\"")
+               #    os.system(f"cp \"{full_path}\" \"{out_vid_path}/{num}.mp4\"")
+               #    num+=1
 
    return 
 
